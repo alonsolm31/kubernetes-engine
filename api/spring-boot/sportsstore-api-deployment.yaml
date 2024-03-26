@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sportsstore
+  labels:
+    name: sportsstore-deploy
+    app: sportsstore-gke-deployment
+  namespace: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sportsstore
+  template:
+    metadata:
+      labels:
+        app: sportsstore
+    spec:
+      containers:
+        - name: sportsstore
+          image: alonsomejia/sportsstore:1.0.1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MSQL_SERVER
+              value: mysql-service
+            - name: MYSQL_DATABASE
+              value: sportsstore
+            - name: MYSQL_USER
+              value: root
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sportsstore-secret
+                  key: mysql-password
+          imagePullPolicy: Always
